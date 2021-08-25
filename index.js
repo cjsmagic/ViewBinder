@@ -10,7 +10,10 @@ const person = {
   gender: 'M',
   score: 0,
   address: {
-    city: 'mangalore'
+    city: 'mangalore',
+    internal: {
+      score: 1
+    }
   }
 };
 
@@ -20,30 +23,23 @@ function ViewBinder(intitialState, parentDom) {
   const bindables = {};
 
   _this.setState = function(obj) {
-    function recursive(o, nk) {
-      Object.entries(obj).forEach(keyValuePair => {
+    function findAndBind(o, nk) {
+      Object.entries(o).forEach(keyValuePair => {
         const [key, value] = keyValuePair;
-        _this.model[key] = value;
-        if (typeof value === 'Object') {
-          let nestedKey = key;
+        const nestedKey = nk ? `${nk}.${key}` : key;
 
-           vs else {
-            recursive(o, nk);
-          }
-
-          // Object.entries(o).forEach(item=>{
-
-          //   const [k,v]=item;
-
-          // if (bindables[key]) {
-
-          // });
+        if (typeof _this.model[key] !== 'undefined') {
+          _this.model[key] = value;
         }
-        if (typeof value === 'Object') {
-          recursive(value, nestedKey);
+
+        if (typeof value === 'object') {
+          findAndBind(value, nestedKey);
+        } else if (typeof bindables[nestedKey] !== 'undefined') {
+          bindables[nestedKey].innerText = value;
         }
       });
     }
+    findAndBind(obj);
   };
 
   Array.from(parentDom.querySelectorAll('[data-bind]')).forEach(el => {
@@ -59,6 +55,15 @@ function ViewBinder(intitialState, parentDom) {
 const view = new ViewBinder(person, appDiv);
 
 document.getElementById('increament-btn').addEventListener('click', function() {
-  let score = view.model.score + 1;
-  view.setState({ score, address: { city: 'Bangalore' } });
+  const { model, setState } = view;
+  const score = model.score + 1;
+  setState({
+    score,
+    address: {
+      city: 'Bangalore',
+      internal: {
+        score
+      }
+    }
+  });
 });

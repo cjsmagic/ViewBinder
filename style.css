@@ -9,7 +9,7 @@ h2 {
   animation: 3s fade infinite;
 }
 
-#increament-btn:hover {
+/* #increament-btn:hover {
   opacity: 0.5;
 }
 
@@ -20,4 +20,4 @@ h2 {
   to {
     opacity: 1;
   }
-}
+} */
